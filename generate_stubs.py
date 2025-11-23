@@ -14,7 +14,17 @@ def generate_stubs(
     for project in projects:
         print(f"\tGenerating stubs for '{project.name}'...")
         try:
-            run_cmd()  # TODO
+            run_cmd(
+                [
+                    "uv",
+                    "run",
+                    "stubgen",
+                    "-p",
+                    project.name,
+                    "-o",
+                    f"{project.name}-stubs",
+                ]
+            )  # TODO
         except (subprocess.CalledProcessError, FileNotFoundError):
             print(f"\tUnable to generate stubs for '{project.name}")
             return False
