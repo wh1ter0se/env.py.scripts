@@ -1,14 +1,19 @@
 import subprocess
-from _config import PROJECTS
-from _common import must_pass, format_prefix, run_cmd
 from pathlib import Path
+from typing import List, Union
+
+from _common import format_prefix, must_pass, run_cmd
+from _config import PROJECTS
 
 
 def install_dependencies(
-    projects: list[Path] = PROJECTS,
-    dependency_groups: list[str] = [],
-    prefix: str | None = None,
+    projects: List[Path] = PROJECTS,
+    dependency_groups: Union[List[str], None] = None,
+    prefix: Union[str, None] = None,
 ) -> bool:
+    if dependency_groups is None:
+        dependency_groups = []
+
     print(format_prefix(prefix) + "Installing dependencies...")
     for path in projects:
         print(f"\tInstalling project '{path}'...")

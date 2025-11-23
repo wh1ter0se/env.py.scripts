@@ -1,12 +1,13 @@
 import os
 import re
 import subprocess
+from typing import List, Optional, Union
 
 
 class UvVersionInfo:
-    major: int | None
-    minor: int | None
-    micro: int | None
+    major: Optional[int]
+    minor: Optional[int]
+    micro: Optional[int]
 
     _stdout: bytes
 
@@ -37,7 +38,7 @@ def must_pass(value: bool) -> None:
         exit(1)
 
 
-def format_prefix(prefix: str | None) -> str:
+def format_prefix(prefix: Optional[str]) -> str:
     """Format the prefix for logging."""
     if prefix is None:
         return "\t"
@@ -45,7 +46,7 @@ def format_prefix(prefix: str | None) -> str:
 
 
 def run_cmd(
-    cmd: str | list[str],
+    cmd: Union[str, List[str]],
     check: bool = False,
     stdout: int = subprocess.PIPE,
     stderr: int = subprocess.PIPE,
@@ -66,7 +67,7 @@ def user_is_running_windows() -> bool:
     return os.name == "nt"
 
 
-def get_uv_version(prefix: str | None = None) -> UvVersionInfo | None:
+def get_uv_version(prefix: Optional[str] = None) -> Optional[UvVersionInfo]:
     """Check if uv is installed."""
     print(format_prefix(prefix) + "Checking uv version...")
     try:

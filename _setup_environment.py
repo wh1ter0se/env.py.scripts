@@ -1,12 +1,16 @@
-from _config import DEV_DEP_GROUPS
-from _common import must_pass, get_uv_version
-from install_uv import install_uv, update_uv
+from typing import List, Optional
+
+from _common import get_uv_version, must_pass
 from create_venv import create_venv
-from python.install_dependencies import install_dependencies
 from generate_stubs import generate_stubs
+from install_dependencies import install_dependencies
+from install_uv import install_uv, update_uv
 
 
-def setup_environment(dependency_groups: list[str] = []) -> None:
+def setup_environment(dependency_groups: Optional[List[str]] = None) -> None:
+    if dependency_groups is None:
+        dependency_groups = []
+
     # Install uv
     if get_uv_version(prefix="1/7") is None:
         must_pass(install_uv(prefix="2/7"))

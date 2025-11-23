@@ -1,14 +1,16 @@
 import subprocess
+from typing import List, Optional
+
 from _common import (
-    must_pass,
     format_prefix,
+    get_uv_version,
+    must_pass,
     run_cmd,
     user_is_running_windows,
-    get_uv_version,
 )
 
 
-def get_pip_alias(prefix: str | None) -> list[str] | None:
+def get_pip_alias(prefix: Optional[str] = None) -> Optional[List[str]]:
     """Checks for a binding to pip (Python package installer)"""
     print(format_prefix(prefix) + "Checking for pip alias...")
     aliases = [
@@ -23,7 +25,7 @@ def get_pip_alias(prefix: str | None) -> list[str] | None:
         try:
             alias.append("--version")
             run_cmd(cmd=alias, check=True)
-            print(f"\tFound pip alias ({" ".join(alias)})")
+            print(f"\tFound pip alias ({' '.join(alias)})")
             return alias
         except (subprocess.CalledProcessError, FileNotFoundError):
             continue
@@ -31,7 +33,7 @@ def get_pip_alias(prefix: str | None) -> list[str] | None:
     return None
 
 
-def install_uv(prefix: str | None) -> bool:
+def install_uv(prefix: Optional[str]) -> bool:
     """Install uv, if not already installed."""
     print(format_prefix(prefix) + "Installing uv...")
 
@@ -77,7 +79,7 @@ def install_uv(prefix: str | None) -> bool:
     return False
 
 
-def update_uv(prefix: str | None) -> bool:
+def update_uv(prefix: Optional[str]) -> bool:
     """Update uv to the latest version."""
     print(format_prefix(prefix) + "Updating uv...")
 

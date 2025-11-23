@@ -1,15 +1,16 @@
 import shutil
 import subprocess
-from _common import must_pass, format_prefix, run_cmd
-from _config import VENV_LOCATION, PYTHON_VERSION
 from pathlib import Path
+from typing import Optional
+
+from _common import format_prefix, must_pass, run_cmd
+from _config import PYTHON_VERSION, VENV_LOCATION
 
 
 def remove_existing_venv(
     venv_path: Path,
-    prefix: str | None,
+    prefix: Optional[str],
 ) -> None:
-
     print(format_prefix(prefix) + "Searching for existing venv...")
 
     # Remove the existing venv
@@ -23,9 +24,9 @@ def remove_existing_venv(
 
 def create_venv(
     venv_path: Path = VENV_LOCATION,
-    version: str | None = PYTHON_VERSION,
-    prefix: str | None = None,
-) -> Path | None:
+    version: Optional[str] = PYTHON_VERSION,
+    prefix: Optional[str] = None,
+) -> Optional[Path]:
     """Create a virtual environment at the specified path."""
     print(format_prefix(prefix) + "Creating venv...")
 
