@@ -6,22 +6,23 @@ from _common import format_prefix
 
 
 class ParentConfig(TypedDict):
-    VENV_LOCATION: Path
+    VENV_LOCATION: str
     PYTHON_VERSION: Optional[str]
     PROJECTS: List[Path]
     DEV_DEP_GROUPS: List["str"]
     PIPELINE_DEP_GROUPS: List["str"]
 
 
+DEFAULT_PARENT_CONFIG_PATH = Path(".script_config.json")
 DEFAULT_PARENT_CONFIG = ParentConfig(
-    VENV_LOCATION=Path(".venv"),
+    VENV_LOCATION=".venv",
     PYTHON_VERSION=None,
     PROJECTS=[],
     DEV_DEP_GROUPS=["dev", "test"],
     PIPELINE_DEP_GROUPS=["pipeline", "test"],
 )
 
-VENV_LOCATION: Path = DEFAULT_PARENT_CONFIG["VENV_LOCATION"]
+VENV_LOCATION: Path = Path(DEFAULT_PARENT_CONFIG["VENV_LOCATION"])
 PYTHON_VERSION: Optional[str] = DEFAULT_PARENT_CONFIG["PYTHON_VERSION"]
 PROJECTS: List[Path] = DEFAULT_PARENT_CONFIG["PROJECTS"]
 DEV_DEP_GROUPS: List["str"] = DEFAULT_PARENT_CONFIG["DEV_DEP_GROUPS"]
@@ -50,13 +51,10 @@ def create_parent_config(
     # Write the defaults to file
     try:
         with open(parent_config_path, "w") as f:
-            json.dump(DEFAULT_PARENT_CONFIG, f)
-        print(format_prefix(prefix) + "Parent config generated using defaults")
+            json.dump(dict(DEFAULT_PARENT_CONFIG), f, indent=4)
+        print("\tParent config generated using defaults")
     except Exception as e:
-        print(
-            format_prefix(prefix)
-            + f"Exception while reading parent config at '{parent_config_path}': {e}"
-        )
+        print(f"\tException while reading parent config at '{parent_config_path}': {e}")
         return
 
 
@@ -64,37 +62,32 @@ def check_parent_config(
     parent_config_path: Optional[Path] = None,
     prefix: Optional[str] = None,
 ) -> None:
+    print(format_prefix(prefix) + "Loading parent config...")
     # Populate the path (if not provided)
     if parent_config_path is None:
-        parent_config_path = Path("script_config.json")
+        parent_config_path = DEFAULT_PARENT_CONFIG_PATH
 
     # Resolve the path
     parent_config_path = parent_config_path.resolve()
 
     # Check for the config file
     if not parent_config_path.exists():
-        print(
-            format_prefix(prefix) + f"No parent config found at '{parent_config_path}"
-        )
+        print(f"\tNo parent config found at '{parent_config_path}")
         create_parent_config(parent_config_path=parent_config_path)
 
     # Try to load the config
     parent_config: ParentConfig
     try:
-        print(format_prefix(prefix) + "Reading parent config...")
         with open(parent_config_path) as f:
             parent_config = json.load(f)
     except Exception as e:
-        print(
-            format_prefix(prefix)
-            + f"Exception while reading parent config at '{parent_config_path}': {e}"
-        )
+        print(f"\tException while reading parent config at '{parent_config_path}': {e}")
         return
 
     # Check for each variale
     if "VENV_LOCATION" in parent_config.keys():
         global VENV_LOCATION
-        VENV_LOCATION = parent_config["VENV_LOCATION"]
+        VENV_LOCATION = Path(parent_config["VENV_LOCATION"])
 
     if "PYTHON_VERSION" in parent_config.keys():
         global PYTHON_VERSION
