@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 from _common import format_prefix, must_pass, run_cmd
-from _config import PYTHON_VERSION, VENV_LOCATION
+from _config import PYTHON_VERSION, VENV_LOCATION, check_parent_config
 
 
 def remove_existing_venv(
@@ -23,12 +23,21 @@ def remove_existing_venv(
 
 
 def create_venv(
-    venv_path: Path = VENV_LOCATION,
-    version: Optional[str] = PYTHON_VERSION,
+    venv_path: Optional[Path] = None,
+    version: Optional[str] = None,
     prefix: Optional[str] = None,
 ) -> Optional[Path]:
     """Create a virtual environment at the specified path."""
     print(format_prefix(prefix) + "Creating venv...")
+
+    # Update defaults from parent config (if any)
+    check_parent_config()
+
+    # Populate missing vars
+    if venv_path is None:
+        venv_path = VENV_LOCATION
+    if version is None:
+        version = PYTHON_VERSION
 
     # Remove the existing venv
     if venv_path.exists():
