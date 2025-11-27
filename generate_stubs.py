@@ -22,7 +22,7 @@ def generate_stubs(
                     "-p",
                     project.name,
                     "-o",
-                    f"{project.name}-stubs",
+                    f"{project.name}/stubs",
                 ]
             )  # TODO
         except (subprocess.CalledProcessError, FileNotFoundError):
