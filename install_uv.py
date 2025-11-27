@@ -50,7 +50,7 @@ def install_uv(prefix: Optional[str]) -> bool:
                 cmd=["uv", "--version"],
                 check=True,
             )
-            print("\tSuccessfully installed uv via curl")
+            print("\tSuccessfully installed uv")
             return True
         except (subprocess.CalledProcessError, FileNotFoundError):
             print("\tFailed to install uv via curl")
@@ -71,7 +71,7 @@ def install_uv(prefix: Optional[str]) -> bool:
             cmd=["uv", "--version"],
             check=True,
         )
-        print("\tSuccessfully installed uv via pip")
+        print("\tSuccessfully installed uv")
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("\tFailed to install uv via pip.")
@@ -90,7 +90,7 @@ def update_uv(prefix: Optional[str]) -> bool:
             cmd=["uv", "self", "update"],
             check=True,
         )
-        print("\tSuccessfully updated uv directly")
+        print("\tSuccessfully updated uv")
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("\tFailed to update uv directly")
@@ -107,7 +107,7 @@ def update_uv(prefix: Optional[str]) -> bool:
             cmd=[*pip_alias, "install", "--upgrade", "uv"],
             check=True,
         )
-        print("\tSuccessfully updated uv via pip")
+        print("\tSuccessfully updated uv")
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("\tFailed to update uv via pip")
