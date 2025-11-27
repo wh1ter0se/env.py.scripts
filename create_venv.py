@@ -30,9 +30,6 @@ def create_venv(
     """Create a virtual environment at the specified path."""
     print(format_prefix(prefix) + "Creating venv...")
 
-    # Update defaults from parent config (if any)
-    check_parent_config()
-
     # Populate missing vars
     if venv_path is None:
         venv_path = VENV_LOCATION
@@ -63,6 +60,9 @@ def create_venv(
 
 
 if __name__ == "__main__":
+    # Load the parent config
+    must_pass(check_parent_config(prefix="1/2"))
+
     # Create a virtual environment
-    venv_path = create_venv(prefix="5/7")
+    venv_path = create_venv(prefix="2/2")
     must_pass(venv_path is not None and venv_path.exists())

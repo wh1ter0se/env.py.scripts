@@ -32,7 +32,7 @@ PIPELINE_DEP_GROUPS: List["str"] = DEFAULT_PARENT_CONFIG["PIPELINE_DEP_GROUPS"]
 def create_parent_config(
     parent_config_path: Path,
     prefix: Optional[str] = None,
-) -> None:
+) -> bool:
     # Resolve the path
     parent_config_path = parent_config_path.resolve()
 
@@ -53,15 +53,16 @@ def create_parent_config(
         with open(parent_config_path, "w") as f:
             json.dump(dict(DEFAULT_PARENT_CONFIG), f, indent=4)
         print("\tParent config generated using defaults")
+        return True
     except Exception as e:
         print(f"\tException while reading parent config at '{parent_config_path}': {e}")
-        return
+        return False
 
 
 def check_parent_config(
     parent_config_path: Optional[Path] = None,
     prefix: Optional[str] = None,
-) -> None:
+) -> bool:
     print(format_prefix(prefix) + "Loading parent config...")
     # Populate the path (if not provided)
     if parent_config_path is None:
@@ -73,7 +74,8 @@ def check_parent_config(
     # Check for the config file
     if not parent_config_path.exists():
         print(f"\tNo parent config found at '{parent_config_path}")
-        create_parent_config(parent_config_path=parent_config_path)
+        if not create_parent_config(parent_config_path=parent_config_path):
+            return False
 
     # Try to load the config
     parent_config: ParentConfig
@@ -82,9 +84,9 @@ def check_parent_config(
             parent_config = json.load(f)
     except Exception as e:
         print(f"\tException while reading parent config at '{parent_config_path}': {e}")
-        return
+        return False
 
-    # Check for each variale
+    # Check for each variable
     if "VENV_LOCATION" in parent_config.keys():
         global VENV_LOCATION
         VENV_LOCATION = Path(parent_config["VENV_LOCATION"])
@@ -104,3 +106,5 @@ def check_parent_config(
     if "PIPELINE_DEP_GROUPS" in parent_config.keys():
         global PIPELINE_DEP_GROUPS
         PIPELINE_DEP_GROUPS = parent_config["PIPELINE_DEP_GROUPS"]
+
+    return True
