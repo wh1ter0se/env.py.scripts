@@ -1,29 +1,49 @@
 import logging
-from typing import ClassVar, Dict, Optional
+import re
+from typing import Optional
+
+LIGHT_BLUE = "\033[94m"
+LIGHT_ORANGE = "\033[93m"
+LIGHT_RED_ORANGE = "\033[91m"
+LIGHT_RED = "\033[95m"
+RESET = "\033[0m"
 
 
 class CustomFormatter(logging.Formatter):
-    grey = "\x1b[38;20m"
-    yellow = "\x1b[33;20m"
-    red = "\x1b[31;20m"
-    bold_red = "\x1b[31;1m"
-    reset = "\x1b[0m"
-    format_template = (
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
-    )
+    bracket_start = re.compile(r"^\[([^]]+)\]")
 
-    FORMATS: ClassVar[Dict[int, str]] = {
-        logging.DEBUG: grey + format_template + reset,
-        logging.INFO: grey + format_template + reset,
-        logging.WARNING: yellow + format_template + reset,
-        logging.ERROR: red + format_template + reset,
-        logging.CRITICAL: bold_red + format_template + reset,
-    }
+    def format(self, record: logging.LogRecord) -> str:
+        msg = record.getMessage()
+        if msg is None:
+            return ""
 
-    def format(self, record):
-        log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt)
-        return formatter.format(record)
+        # ---------- INFO ----------
+        if record.levelno == logging.INFO:
+            m = self.bracket_start.match(msg)
+            if m:
+                inner = m.group(1)  # text inside brackets
+                colored = f"[{LIGHT_BLUE}{inner}{RESET}]"  # color ONLY inside
+                msg = colored + msg[m.end() :]  # keep rest unchanged
+            else:
+                msg = " " * 4 + msg
+
+        # ---------- DEBUG ----------
+        elif record.levelno == logging.DEBUG:
+            msg = " " * 4 + msg
+
+        # ---------- WARNING ----------
+        elif record.levelno == logging.WARNING:
+            msg = f"  {LIGHT_ORANGE}!{RESET} " + msg
+
+        # ---------- ERROR ----------
+        elif record.levelno == logging.ERROR:
+            msg = f" {LIGHT_RED_ORANGE}!!{RESET} " + msg
+
+        # ---------- CRITICAL ----------
+        elif record.levelno == logging.CRITICAL:
+            msg = f"{LIGHT_RED}!!!{RESET} " + msg
+
+        return msg
 
 
 def get_logger(
