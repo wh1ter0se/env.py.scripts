@@ -1,26 +1,29 @@
 import subprocess
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
+import _config
 from _common import format_prefix, must_pass, run_cmd
-from _config import PROJECTS
 from _logging import get_logger
 
 log = get_logger()
 
 
 def install_dependencies(
-    projects: List[Path] = PROJECTS,
+    projects: Optional[List[Path]] = None,
     dependency_groups: Union[List[str], None] = None,
     prefix: Union[str, None] = None,
 ) -> bool:
+    # Populate defaultsi
+    if projects is None:
+        projects = _config.PROJECTS
     if dependency_groups is None:
         dependency_groups = []
 
     # Install each project's dependency list
     log.info(format_prefix(prefix) + "Installing dependencies...")
     for path in projects:
-        log.debug(f"Installing project '{path}'...")
+        log.debug(f"Installing dependencies for project '{path}'...")
         try:
             # Build the command
             cmd = ["uv", "pip", "install", str(path)]
@@ -30,7 +33,7 @@ def install_dependencies(
 
             # Run the command
             run_cmd(cmd=cmd, check=False)
-            log.debug(f"Installed project '{path}'")
+            log.debug(f"Installed dependencies for project '{path}'")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             log.error(f"Failed to install project '{path}': {e}")
             return False

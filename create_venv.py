@@ -3,8 +3,8 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
+import _config
 from _common import format_prefix, must_pass, run_cmd
-from _config import PYTHON_VERSION, VENV_LOCATION, check_parent_config
 from _logging import get_logger
 
 log = get_logger()
@@ -35,9 +35,9 @@ def create_venv(
 
     # Populate missing vars
     if venv_path is None:
-        venv_path = VENV_LOCATION
+        venv_path = _config.VENV_LOCATION
     if version is None:
-        version = PYTHON_VERSION
+        version = _config.PYTHON_VERSION
 
     # Remove the existing venv
     if venv_path.exists():
@@ -64,7 +64,7 @@ def create_venv(
 
 if __name__ == "__main__":
     # Load the parent config
-    must_pass(check_parent_config(prefix="1/2"))
+    must_pass(_config.check_parent_config(prefix="1/2"))
 
     # Create a virtual environment
     venv_path = create_venv(prefix="2/2")

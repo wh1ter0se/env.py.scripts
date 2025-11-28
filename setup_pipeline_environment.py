@@ -1,5 +1,5 @@
-from _config import PIPELINE_DEP_GROUPS
+import _config
 from _setup_environment import setup_environment
 
 if __name__ == "__main__":
-    setup_environment(dependency_groups=PIPELINE_DEP_GROUPS)
+    setup_environment(dependency_groups=_config.PIPELINE_DEP_GROUPS)

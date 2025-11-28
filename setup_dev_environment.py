@@ -1,5 +1,5 @@
-from _config import DEV_DEP_GROUPS
+import _config
 from _setup_environment import setup_environment
 
 if __name__ == "__main__":
-    setup_environment(dependency_groups=DEV_DEP_GROUPS)
+    setup_environment(dependency_groups=_config.DEV_DEP_GROUPS)

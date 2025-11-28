@@ -1,7 +1,7 @@
 from typing import List, Optional
 
+import _config
 from _common import check_connecion, get_uv_version, must_pass
-from _config import check_parent_config
 from create_venv import create_venv
 from generate_stubs import generate_stubs
 from install_dependencies import install_dependencies
@@ -19,7 +19,7 @@ def setup_environment(dependency_groups: Optional[List[str]] = None) -> None:
     must_pass(check_connecion(prefix="1/9"))
 
     # Load the parent config
-    must_pass(check_parent_config(prefix="2/9"))
+    must_pass(_config.check_parent_config(prefix="2/9"))
 
     # Install uv
     if get_uv_version(prefix="3/9") is None:
