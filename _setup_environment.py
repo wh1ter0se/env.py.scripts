@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from _common import get_uv_version, must_pass
+from _common import check_connecion, get_uv_version, must_pass
 from _config import check_parent_config
 from create_venv import create_venv
 from generate_stubs import generate_stubs
@@ -15,32 +15,35 @@ def setup_environment(dependency_groups: Optional[List[str]] = None) -> None:
     if dependency_groups is None:
         dependency_groups = []
 
+    # Check connection
+    must_pass(check_connecion(prefix="1/9"))
+
     # Load the parent config
-    must_pass(check_parent_config(prefix="1/8"))
+    must_pass(check_parent_config(prefix="2/9"))
 
     # Install uv
-    if get_uv_version(prefix="2/8") is None:
-        must_pass(install_uv(prefix="3/8"))
+    if get_uv_version(prefix="3/9") is None:
+        must_pass(install_uv(prefix="4/9"))
 
     # Update uv
-    update_uv(prefix="4/8")
+    update_uv(prefix="5/9")
 
     # Verify installation
-    must_pass(get_uv_version(prefix="5/8") is not None)
+    must_pass(get_uv_version(prefix="6/9") is not None)
 
     # Create a virtual environment
-    venv_path = create_venv(prefix="6/8")
+    venv_path = create_venv(prefix="7/9")
     must_pass(venv_path is not None and venv_path.exists())
 
     # Install dependencies in the virtual environment
     must_pass(
         install_dependencies(
             dependency_groups=dependency_groups,
-            prefix="7/8",
+            prefix="8/9",
         )
     )
 
     # Generate stubs
-    must_pass(generate_stubs(prefix="8/8"))
+    must_pass(generate_stubs(prefix="9/9"))
 
     print()

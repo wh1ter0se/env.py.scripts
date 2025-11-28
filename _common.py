@@ -1,5 +1,6 @@
 import os
 import re
+import socket
 import subprocess
 from typing import List, Optional, Union
 
@@ -69,6 +70,21 @@ def run_cmd(
 def user_is_running_windows() -> bool:
     """Check if the user is running Windows."""
     return os.name == "nt"
+
+
+def check_connecion(
+    host_ip: str = "1.1.1.1",
+    timeout_s: float = 1.0,
+    prefix: Optional[str] = None,
+) -> bool:
+    log.info(format_prefix(prefix) + "Checking connection...")
+    try:
+        socket.create_connection(address=(host_ip, 53), timeout=timeout_s)
+        log.debug("Connection established")
+        return True
+    except OSError:
+        log.error("Unable to establish connection")
+        return False
 
 
 def get_uv_version(prefix: Optional[str] = None) -> Optional[UvVersionInfo]:
