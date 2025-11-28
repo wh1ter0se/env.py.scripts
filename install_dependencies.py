@@ -17,6 +17,7 @@ def install_dependencies(
     if dependency_groups is None:
         dependency_groups = []
 
+    # Install each project's dependency list
     log.info(format_prefix(prefix) + "Installing dependencies...")
     for path in projects:
         log.debug(f"Installing project '{path}'...")
@@ -31,8 +32,10 @@ def install_dependencies(
             run_cmd(cmd=cmd, check=False)
             log.debug(f"Installed project '{path}'")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            log.debug(f"Failed to install project '{path}': {e}")
+            log.error(f"Failed to install project '{path}': {e}")
             return False
+
+    log.debug("All dependencies installed")
     return True
 
 
