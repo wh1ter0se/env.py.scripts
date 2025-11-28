@@ -48,8 +48,8 @@ def format_prefix(prefix: Optional[str]) -> str:
 def run_cmd(
     cmd: Union[str, List[str]],
     check: bool = False,
-    stdout: int = subprocess.PIPE,
-    stderr: int = subprocess.PIPE,
+    stdout: int = subprocess.DEVNULL,
+    stderr: int = subprocess.DEVNULL,
     shell: bool = False,
 ) -> subprocess.CompletedProcess:
     """Run a command and return the completed process."""
@@ -73,8 +73,7 @@ def get_uv_version(prefix: Optional[str] = None) -> Optional[UvVersionInfo]:
     try:
         # Check the version
         version_check_subproc = run_cmd(
-            cmd=["uv", "--version"],
-            check=True,
+            cmd=["uv", "--version"], check=True, stdout=subprocess.PIPE
         )
         print("\tFound uv version")
         version = UvVersionInfo(stdout=version_check_subproc.stdout)
