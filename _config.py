@@ -3,6 +3,9 @@ from pathlib import Path
 from typing import List, Optional, TypedDict
 
 from _common import format_prefix
+from _logging import get_logger
+
+log = get_logger()
 
 
 class ParentConfig(TypedDict):
@@ -38,12 +41,12 @@ def create_parent_config(
 
     # Check if there is an existing file
     if parent_config_path.exists():
-        print(
+        log.info(
             format_prefix(prefix)
             + f"Overwriting parent config at '{parent_config_path}' with defaults..."
         )
     else:
-        print(
+        log.info(
             format_prefix(prefix)
             + f"Writing new parent config at '{parent_config_path}' with defaults..."
         )
@@ -52,10 +55,12 @@ def create_parent_config(
     try:
         with open(parent_config_path, "w") as f:
             json.dump(dict(DEFAULT_PARENT_CONFIG), f, indent=4)
-        print("\tParent config generated using defaults")
+        log.info("Parent config generated using defaults")
         return True
     except Exception as e:
-        print(f"\tException while reading parent config at '{parent_config_path}': {e}")
+        log.error(
+            f"\tException while reading parent config at '{parent_config_path}': {e}"
+        )
         return False
 
 
@@ -63,7 +68,7 @@ def check_parent_config(
     parent_config_path: Optional[Path] = None,
     prefix: Optional[str] = None,
 ) -> bool:
-    print(format_prefix(prefix) + "Loading parent config...")
+    log.info(format_prefix(prefix) + "Loading parent config...")
     # Populate the path (if not provided)
     if parent_config_path is None:
         parent_config_path = DEFAULT_PARENT_CONFIG_PATH
@@ -72,8 +77,10 @@ def check_parent_config(
     parent_config_path = parent_config_path.resolve()
 
     # Check for the config file
-    if not parent_config_path.exists():
-        print(f"\tNo parent config found at '{parent_config_path}")
+    if parent_config_path.exists():
+        log.debug("Found parent config")
+    else:
+        log.warning(f"\tNo parent config found at '{parent_config_path}")
         if not create_parent_config(parent_config_path=parent_config_path):
             return False
 
@@ -82,8 +89,11 @@ def check_parent_config(
     try:
         with open(parent_config_path) as f:
             parent_config = json.load(f)
+        log.debug("Parent config loaded")
     except Exception as e:
-        print(f"\tException while reading parent config at '{parent_config_path}': {e}")
+        log.error(
+            f"\tException while reading parent config at '{parent_config_path}': {e}"
+        )
         return False
 
     # Check for each variable

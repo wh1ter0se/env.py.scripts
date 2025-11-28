@@ -5,21 +5,24 @@ from typing import Optional
 
 from _common import format_prefix, must_pass, run_cmd
 from _config import PYTHON_VERSION, VENV_LOCATION, check_parent_config
+from _logging import get_logger
+
+log = get_logger()
 
 
 def remove_existing_venv(
     venv_path: Path,
     prefix: Optional[str],
 ) -> None:
-    print(format_prefix(prefix) + "Searching for existing venv...")
+    log.info(format_prefix(prefix) + "Searching for existing venv...")
 
     # Remove the existing venv
     if venv_path.exists():
-        print("\tRemoving existing venv...")
+        log.debug("Removing existing venv...")
         shutil.rmtree(venv_path)
-        print("\tExisting venv removed")
+        log.debug("Existing venv removed")
     else:
-        print("\tNo existing venv found")
+        log.debug("No existing venv found")
 
 
 def create_venv(
@@ -28,7 +31,7 @@ def create_venv(
     prefix: Optional[str] = None,
 ) -> Optional[Path]:
     """Create a virtual environment at the specified path."""
-    print(format_prefix(prefix) + "Creating venv...")
+    log.info(format_prefix(prefix) + "Creating venv...")
 
     # Populate missing vars
     if venv_path is None:
@@ -38,7 +41,7 @@ def create_venv(
 
     # Remove the existing venv
     if venv_path.exists():
-        print("\tRemoving existing venv...")
+        log.debug("Removing existing venv...")
         shutil.rmtree(venv_path)
 
     # Specify version if provided
@@ -51,10 +54,10 @@ def create_venv(
     # Create the venv
     try:
         run_cmd(cmd=cmd, check=True)
-        print("\tVenv created")
+        log.debug("Venv created")
         return venv_path
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("\tFailed to create venv")
+        log.error("Failed to create venv")
 
     return None
 

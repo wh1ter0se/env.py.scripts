@@ -1,11 +1,11 @@
 import logging
 import re
-from typing import Optional
 
 LIGHT_BLUE = "\033[94m"
 LIGHT_ORANGE = "\033[93m"
 LIGHT_RED_ORANGE = "\033[91m"
 LIGHT_RED = "\033[95m"
+GREY = "\033[90m"
 RESET = "\033[0m"
 
 
@@ -25,11 +25,11 @@ class CustomFormatter(logging.Formatter):
                 colored = f"[{LIGHT_BLUE}{inner}{RESET}]"  # color ONLY inside
                 msg = colored + msg[m.end() :]  # keep rest unchanged
             else:
-                msg = " " * 4 + msg
+                msg = " " * 4 + f"{GREY}{msg}{RESET}"
 
         # ---------- DEBUG ----------
         elif record.levelno == logging.DEBUG:
-            msg = " " * 4 + msg
+            msg = " " * 4 + f"{GREY}{msg}{RESET}"
 
         # ---------- WARNING ----------
         elif record.levelno == logging.WARNING:
@@ -46,24 +46,16 @@ class CustomFormatter(logging.Formatter):
         return msg
 
 
-def get_logger(
-    name: Optional[str] = None,
-    level: str = "info",
-) -> logging.Logger:
-    # Convert level string to literal
-    upper_level = level.strip().upper()
-    if upper_level not in logging._nameToLevel.keys():
-        raise ValueError(f"Invalid log level: {level}")
-    literal_level = logging._nameToLevel[upper_level]
-
+def get_logger() -> logging.Logger:
     # Generate logger
-    logger = logging.getLogger(name)
-    logger.setLevel(literal_level)
+    logger = logging.getLogger("singleton")
 
-    # Attach stream (console) handler
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(literal_level)
-    stream_handler.setFormatter(CustomFormatter())
-    logger.addHandler(stream_handler)
+    # Configure logger (if not already confiugred)
+    if not logger.hasHandlers():
+        logger.setLevel(logging.DEBUG)
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.DEBUG)
+        stream_handler.setFormatter(CustomFormatter())
+        logger.addHandler(stream_handler)
 
     return logger

@@ -4,15 +4,18 @@ from typing import List, Union
 
 from _common import format_prefix, must_pass, run_cmd
 from _config import PROJECTS
+from _logging import get_logger
+
+log = get_logger()
 
 
 def generate_stubs(
     projects: List[Path] = PROJECTS,
     prefix: Union[str, None] = None,
 ) -> bool:
-    print(format_prefix(prefix) + "Generating stubs...")
+    log.info(format_prefix(prefix) + "Generating stubs...")
     for project in projects:
-        print(f"\tGenerating stubs for '{project.name}'...")
+        log.debug(f"Generating stubs for '{project.name}'...")
         try:
             run_cmd(
                 [
@@ -26,13 +29,13 @@ def generate_stubs(
                 ]
             )
         except (subprocess.CalledProcessError, FileNotFoundError):
-            print(f"\tUnable to generate stubs for '{project.name}")
+            log.error(f"Unable to generate stubs for '{project.name}")
             return False
 
-    print("\tAll stubs generated")
+    log.debug("All stubs generated")
     return True
 
 
 if __name__ == "__main__":
     # Generate stubs
-    must_pass(generate_stubs(prefix="7/7"))
+    must_pass(generate_stubs(prefix="1/1"))

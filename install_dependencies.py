@@ -4,6 +4,9 @@ from typing import List, Union
 
 from _common import format_prefix, must_pass, run_cmd
 from _config import PROJECTS
+from _logging import get_logger
+
+log = get_logger()
 
 
 def install_dependencies(
@@ -14,9 +17,9 @@ def install_dependencies(
     if dependency_groups is None:
         dependency_groups = []
 
-    print(format_prefix(prefix) + "Installing dependencies...")
+    log.info(format_prefix(prefix) + "Installing dependencies...")
     for path in projects:
-        print(f"\tInstalling project '{path}'...")
+        log.debug(f"Installing project '{path}'...")
         try:
             # Build the command
             cmd = ["uv", "pip", "install", str(path)]
@@ -26,9 +29,9 @@ def install_dependencies(
 
             # Run the command
             run_cmd(cmd=cmd, check=False)
-            print(f"\tInstalled project '{path}'")
+            log.debug(f"Installed project '{path}'")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            print(f"\tFailed to install project '{path}': {e}")
+            log.debug(f"Failed to install project '{path}': {e}")
             return False
     return True
 

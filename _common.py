@@ -3,6 +3,10 @@ import re
 import subprocess
 from typing import List, Optional, Union
 
+from _logging import get_logger
+
+log = get_logger()
+
 
 class UvVersionInfo:
     major: Optional[int]
@@ -27,14 +31,14 @@ class UvVersionInfo:
 
     def __str__(self) -> str:
         if None in (self.major, self.minor, self.micro):
-            return "\tUnable to extract uv version information"
-        return f"\tVersion: {self.major}.{self.minor}.{self.micro}"
+            return "Unable to extract uv version information"
+        return f"Version: {self.major}.{self.minor}.{self.micro}"
 
 
 def must_pass(value: bool) -> None:
     """Exit the program if the value is False."""
     if not value:
-        print("[-] Exiting...")
+        log.critical("Exiting...")
         exit(1)
 
 
@@ -69,16 +73,16 @@ def user_is_running_windows() -> bool:
 
 def get_uv_version(prefix: Optional[str] = None) -> Optional[UvVersionInfo]:
     """Check if uv is installed."""
-    print(format_prefix(prefix) + "Checking uv version...")
+    log.info(format_prefix(prefix) + "Checking uv version...")
     try:
         # Check the version
         version_check_subproc = run_cmd(
             cmd=["uv", "--version"], check=True, stdout=subprocess.PIPE
         )
-        print("\tFound uv version")
+        log.debug("Found uv version")
         version = UvVersionInfo(stdout=version_check_subproc.stdout)
-        print(str(version))
+        log.debug(str(version))
         return version
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("\tNo installations of uv found")
+        log.warning("No installations of uv found")
         return None

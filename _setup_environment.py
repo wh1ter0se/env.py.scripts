@@ -9,6 +9,9 @@ from install_uv import install_uv, update_uv
 
 
 def setup_environment(dependency_groups: Optional[List[str]] = None) -> None:
+    print()
+
+    # Populate defaults
     if dependency_groups is None:
         dependency_groups = []
 
@@ -20,7 +23,7 @@ def setup_environment(dependency_groups: Optional[List[str]] = None) -> None:
         must_pass(install_uv(prefix="3/8"))
 
     # Update uv
-    must_pass(update_uv(prefix="4/8"))
+    update_uv(prefix="4/8")
 
     # Verify installation
     must_pass(get_uv_version(prefix="5/8") is not None)
@@ -39,3 +42,5 @@ def setup_environment(dependency_groups: Optional[List[str]] = None) -> None:
 
     # Generate stubs
     must_pass(generate_stubs(prefix="8/8"))
+
+    print()

@@ -8,11 +8,14 @@ from _common import (
     run_cmd,
     user_is_running_windows,
 )
+from _logging import get_logger
+
+log = get_logger()
 
 
 def get_pip_alias(prefix: Optional[str] = None) -> Optional[List[str]]:
     """Checks for a binding to pip (Python package installer)"""
-    print(format_prefix(prefix) + "Checking for pip alias...")
+    log.info(format_prefix(prefix) + "Checking for pip alias...")
     aliases = [
         ["pip"],
         ["pip3"],
@@ -25,21 +28,21 @@ def get_pip_alias(prefix: Optional[str] = None) -> Optional[List[str]]:
         try:
             alias.append("--version")
             run_cmd(cmd=alias, check=True)
-            print(f"\tFound pip alias ({' '.join(alias)})")
+            log.debug(f"Found pip alias ({' '.join(alias)})")
             return alias
         except (subprocess.CalledProcessError, FileNotFoundError):
             continue
-    print("\tNo pip alias found")
+    log.debug("No pip alias found")
     return None
 
 
 def install_uv(prefix: Optional[str]) -> bool:
     """Install uv, if not already installed."""
-    print(format_prefix(prefix) + "Installing uv...")
+    log.info(format_prefix(prefix) + "Installing uv...")
 
     # Install via curl (if possible)
     if not user_is_running_windows():
-        print("\t*nix detected, installing uv via curl...")
+        log.debug("*nix detected, installing uv via curl...")
         try:
             run_cmd(
                 cmd="curl -LsSf https://astral.sh/uv/install.sh | sh",
@@ -50,10 +53,10 @@ def install_uv(prefix: Optional[str]) -> bool:
                 cmd=["uv", "--version"],
                 check=True,
             )
-            print("\tSuccessfully installed uv")
+            log.debug("Successfully installed uv")
             return True
         except (subprocess.CalledProcessError, FileNotFoundError):
-            print("\tFailed to install uv via curl")
+            log.warning("Failed to install uv via curl")
 
     # Check for existing pip installation
     pip_alias = get_pip_alias()
@@ -61,7 +64,7 @@ def install_uv(prefix: Optional[str]) -> bool:
         return False
 
     # Install via pip
-    print("\tInstalling uv via pip...")
+    log.debug("Installing uv via pip...")
     try:
         run_cmd(
             cmd=[*pip_alias, "install", "uv"],
@@ -71,29 +74,30 @@ def install_uv(prefix: Optional[str]) -> bool:
             cmd=["uv", "--version"],
             check=True,
         )
-        print("\tSuccessfully installed uv")
+        log.debug("Successfully installed uv")
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("\tFailed to install uv via pip.")
+        log.warning("Failed to install uv via pip.")
 
+    log.warning("Unable to install uv")
     return False
 
 
 def update_uv(prefix: Optional[str]) -> bool:
     """Update uv to the latest version."""
-    print(format_prefix(prefix) + "Updating uv...")
+    log.info(format_prefix(prefix) + "Updating uv...")
 
     # Update through uv
-    print("\tUpdating uv directly...")
+    log.debug("Updating uv directly...")
     try:
         run_cmd(
             cmd=["uv", "self", "update"],
             check=True,
         )
-        print("\tSuccessfully updated uv")
+        log.debug("Successfully updated uv")
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("\tFailed to update uv directly")
+        log.warning("Failed to update uv directly")
 
     # Check for existing pip installation
     pip_alias = get_pip_alias()
@@ -101,17 +105,18 @@ def update_uv(prefix: Optional[str]) -> bool:
         return False
 
     # Update through pip
-    print("\tUpdating uv via pip...")
+    log.debug("Updating uv via pip...")
     try:
         run_cmd(
             cmd=[*pip_alias, "install", "--upgrade", "uv"],
             check=True,
         )
-        print("\tSuccessfully updated uv")
+        log.debug("Successfully updated uv")
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("\tFailed to update uv via pip")
+        log.warning("Failed to update uv via pip")
 
+    log.warning("Unable to update uv")
     return False
 
 
@@ -121,7 +126,7 @@ if __name__ == "__main__":
         must_pass(install_uv(prefix="2/4"))
 
     # Update uv
-    must_pass(update_uv(prefix="3/4"))
+    update_uv(prefix="3/4")
 
     # Verify installation
     must_pass(get_uv_version(prefix="4/4") is not None)
