@@ -24,7 +24,7 @@ def generate_stubs(
                     "-o",
                     f"{project.name}/stubs",
                 ]
-            )  # TODO
+            )
         except (subprocess.CalledProcessError, FileNotFoundError):
             print(f"\tUnable to generate stubs for '{project.name}")
             return False
