@@ -34,8 +34,9 @@ def install_dependencies(
             print(f"`{' '.join(cmd)}`")
 
             # Run the command
-            run_cmd(cmd=cmd, check=True)
+            proc = run_cmd(cmd=cmd, check=True, stdout=subprocess.PIPE)
             log.debug(f"Installed dependencies for project '{project}'")
+            log.debug(proc.stdout)
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             log.error(f"Failed to install project '{project}': {e}")
             return False
