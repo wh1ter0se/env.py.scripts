@@ -1,5 +1,4 @@
 import subprocess
-from pathlib import Path
 from typing import List, Optional, Union
 
 import _config
@@ -26,8 +25,7 @@ def install_dependencies(
         log.debug(f"Installing dependencies for project '{project}'...")
         try:
             # Build the command
-            project_path = Path(project).resolve()
-            cmd = ["uv", "pip", "install", str(project_path)]
+            cmd = ["uv", "pip", "install", project]
             if len(dependency_groups) > 0:
                 cmd.append("--group")
                 cmd.extend(dependency_groups)
