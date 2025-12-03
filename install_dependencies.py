@@ -10,7 +10,7 @@ log = get_logger()
 
 
 def install_dependencies(
-    projects: Optional[List[Path]] = None,
+    projects: Optional[List[str]] = None,
     dependency_groups: Union[List[str], None] = None,
     prefix: Union[str, None] = None,
 ) -> bool:
@@ -22,20 +22,22 @@ def install_dependencies(
 
     # Install each project's dependency list
     log.info(format_prefix(prefix) + "Installing dependencies...")
-    for path in projects:
-        log.debug(f"Installing dependencies for project '{path}'...")
+    for project in projects:
+        log.debug(f"Installing dependencies for project '{project}'...")
         try:
             # Build the command
-            cmd = ["uv", "pip", "install", str(path)]
+            project_path = Path(project).resolve()
+            cmd = ["uv", "pip", "install", str(project_path)]
             if len(dependency_groups) > 0:
                 cmd.append("--group")
                 cmd.extend(dependency_groups)
+            print(f"`{' '.join(cmd)}`")
 
             # Run the command
-            run_cmd(cmd=cmd, check=False)
-            log.debug(f"Installed dependencies for project '{path}'")
+            run_cmd(cmd=cmd, check=True)
+            log.debug(f"Installed dependencies for project '{project}'")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            log.error(f"Failed to install project '{path}': {e}")
+            log.error(f"Failed to install project '{project}': {e}")
             return False
 
     log.debug("All dependencies installed")
