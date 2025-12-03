@@ -33,9 +33,10 @@ def install_dependencies(
         try:
             # Build the command
             cmd = ["uv", "pip", "install", project]
-            if len(dependency_groups) > 0:
+            for dependency_group in dependency_groups:
                 cmd.append("--group")
-                cmd.extend(dependency_groups)
+                cmd.append(dependency_group)
+
             print(f"`{' '.join(cmd)}`")
 
             # Run the command
