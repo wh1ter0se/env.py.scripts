@@ -98,28 +98,28 @@ def check_parent_config(
 
     # Check for each variable
     if "VENV_LOCATION" in parent_config.keys():
-        log.debug("Found VENV_LOCATION")
         global VENV_LOCATION
         VENV_LOCATION = Path(parent_config["VENV_LOCATION"])
+        log.debug(f"Found VENV_LOCATION ({VENV_LOCATION})")
 
     if "PYTHON_VERSION" in parent_config.keys():
-        log.debug("Found PYTHON_VERSION")
         global PYTHON_VERSION
         PYTHON_VERSION = parent_config["PYTHON_VERSION"]
+        log.debug(f"Found PYTHON_VERSION ({PYTHON_VERSION})")
 
     if "PROJECTS" in parent_config.keys():
-        log.debug("Found PROJECTS")
         global PROJECTS
         PROJECTS = parent_config["PROJECTS"]
+        log.debug(f"Found PROJECTS ({PROJECTS})")
 
     if "DEV_DEP_GROUPS" in parent_config.keys():
-        log.debug("Found DEV_DEP_GROUPS")
         global DEV_DEP_GROUPS
         DEV_DEP_GROUPS = parent_config["DEV_DEP_GROUPS"]
+        log.debug(f"Found DEV_DEP_GROUPS ({DEV_DEP_GROUPS})")
 
     if "PIPELINE_DEP_GROUPS" in parent_config.keys():
-        log.debug("Found PIPELINE_DEP_GROUPS")
         global PIPELINE_DEP_GROUPS
         PIPELINE_DEP_GROUPS = parent_config["PIPELINE_DEP_GROUPS"]
+        log.debug(f"Found PIPELINE_DEP_GROUPS ({PIPELINE_DEP_GROUPS})")
 
     return True
