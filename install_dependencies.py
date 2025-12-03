@@ -1,4 +1,5 @@
 import subprocess
+from enum import Enum
 from typing import List, Optional, Union
 
 import _config
@@ -6,6 +7,12 @@ from _common import format_prefix, must_pass, run_cmd
 from _logging import get_logger
 
 log = get_logger()
+
+
+class DependencyGroupSet(Enum):
+    baseline = 0
+    dev = 1
+    pipeline = 2
 
 
 def install_dependencies(
@@ -41,6 +48,26 @@ def install_dependencies(
 
     log.debug("All dependencies installed")
     return True
+
+
+def install_dependencies_by_set(
+    projects: Optional[List[str]] = None,
+    dependency_group_set: DependencyGroupSet = DependencyGroupSet.baseline,
+    prefix: Union[str, None] = None,
+) -> bool:
+    # Grab the current lsit from _config
+    dependency_groups = []
+    if dependency_group_set == DependencyGroupSet.dev:
+        dependency_groups.extend(_config.DEV_DEP_GROUPS)
+    elif dependency_group_set == DependencyGroupSet.pipeline:
+        dependency_groups.extend(_config.PIPELINE_DEP_GROUPS)
+
+    # Run parent
+    return install_dependencies(
+        projects=projects,
+        dependency_groups=dependency_groups,
+        prefix=prefix,
+    )
 
 
 if __name__ == "__main__":
